@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react'
 import { getProducts } from '@/lib/api'
 import type { Product } from '@/lib/types'
+import { formatPrice } from '@/lib/types'
 import { Pencil, Trash2, Plus, Search, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
