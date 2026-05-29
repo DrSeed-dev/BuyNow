@@ -1,4 +1,4 @@
-'use client'git
+'use client'
 // components/layout/BottomNav.tsx
 // Fix: useHydrated prevents hydration mismatch error on badges
 

@@ -1,38 +1,35 @@
 // lib/api.ts
-// Works BOTH locally and on Vercel:
-// - Local dev:  calls /api (Next.js API routes, same port)
-// - Vercel:     calls /api (same — works automatically)
-// No more localhost:3001 needed — JSON Server is dev-only
+// FIXED: Reads db.json directly — no HTTP calls needed.
+// Works perfectly in Server Components, Client Components, AND on Vercel.
+// No localhost:3001, no /api fetch, no URL issues ever.
 
+import dbData from '@/data/db.json'
 import type { Product, Category } from '@/lib/types'
 
-// Empty string = relative URL = works on any domain/port automatically
-const BASE_URL = ''
+// Cast once at the top — no TypeScript "any" warnings
+const ALL_PRODUCTS   = dbData.products   as Product[]
+const ALL_CATEGORIES = dbData.categories as Category[]
 
-async function get<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error(`Failed: ${endpoint}`)
-  return res.json()
+// Wrap in Promise.resolve so the API stays async
+// (pages use await — this keeps them compatible)
+
+export const getProducts = () =>
+  Promise.resolve([...ALL_PRODUCTS])
+
+export const getProductById = (id: string) => {
+  const product = ALL_PRODUCTS.find((p) => p.id === id)
+  if (!product) return Promise.reject(new Error('Product not found'))
+  return Promise.resolve(product)
 }
 
-// Products
-export const getProducts = () =>
-  get<Product[]>('/api/products')
-
-export const getProductById = (id: string) =>
-  get<Product>(`/api/products/${id}`)
-
 export const getFeaturedProducts = () =>
-  get<Product[]>('/api/products?isFeatured=true')
+  Promise.resolve(ALL_PRODUCTS.filter((p) => p.isFeatured === true))
 
 export const getFlashDeals = () =>
-  get<Product[]>('/api/products?isFlashDeal=true')
+  Promise.resolve(ALL_PRODUCTS.filter((p) => p.isFlashDeal === true))
 
-export const getProductsByCategory = (cat: string) =>
-  get<Product[]>(`/api/products?category=${cat}`)
+export const getProductsByCategory = (category: string) =>
+  Promise.resolve(ALL_PRODUCTS.filter((p) => p.category === category))
 
-// Categories
 export const getCategories = () =>
-  get<Category[]>('/api/categories')
+  Promise.resolve([...ALL_CATEGORIES])
