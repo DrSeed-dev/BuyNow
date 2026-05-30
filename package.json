@@ -2,15 +2,16 @@
   "name": "buynow",
   "version": "0.1.0",
   "private": true,
-"scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "lint": "next lint",
-  "api": "json-server --watch data/db.json --port 3001"
-},
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "api": "json-server --watch data/db.json --port 3001"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.39.0",

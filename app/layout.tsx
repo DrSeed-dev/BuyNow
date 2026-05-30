@@ -1,6 +1,7 @@
 // app/layout.tsx — Updated to include AnnouncementBar
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import AnnouncementBar from '@/components/layout/AnnouncementBar'
 import Navbar    from '@/components/layout/Navbar'
 import Footer    from '@/components/layout/Footer'
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <BottomNav />
         <Toaster position="top-right" richColors />
+        <SpeedInsights />
       </body>
     </html>
   )
