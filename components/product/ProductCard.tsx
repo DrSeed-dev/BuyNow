@@ -2,6 +2,7 @@
 
 // components/product/ProductCard.tsx
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Heart, ShoppingCart, Star } from 'lucide-react'
 import { toast } from 'sonner'
@@ -10,7 +11,11 @@ import { useWishlistStore } from '@/lib/store/wishlistStore'
 import { formatPrice, getDiscount } from '@/lib/types'
 import type { Product } from '@/lib/types'
 
+// Shows when image URL is broken or slow to load
+const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='60' fill='%23d1d5db'%3E%F0%9F%9B%8D%EF%B8%8F%3C/text%3E%3C/svg%3E"
+
 export default function ProductCard({ product }: { product: Product }) {
+  const [imgSrc, setImgSrc]          = useState(product.images[0])
   const addItem                      = useCartStore((s) => s.addItem)
   const { toggleItem, isInWishlist } = useWishlistStore()
   const wished                       = isInWishlist(product.id)
@@ -36,11 +41,13 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/products/${product.id}`}
       className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
     >
-      {/* Image — same height as original design */}
+      {/* Image */}
       <div className="relative overflow-hidden bg-gray-100">
         <img
-          src={product.images[0]}
+          src={imgSrc}
           alt={product.name}
+          loading="lazy"
+          onError={() => setImgSrc(FALLBACK)}
           className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
         />
 
