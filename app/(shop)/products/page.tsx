@@ -4,6 +4,7 @@
 import { getProducts, getCategories } from '@/lib/api'
 import ProductCard  from '@/components/product/ProductCard'
 import SortSelect   from '@/components/shared/SortSelect'
+import { getCategoryIcon } from '@/lib/categoryIcons'
 import type { Product } from '@/lib/types'
 import Link from 'next/link'
 
@@ -53,15 +54,19 @@ export default async function ProductsPage({ searchParams }: Props) {
                   All Products
                 </Link>
               </li>
-              {categories.map((c) => (
-                <li key={c.slug}>
-                  <Link href={`/products?category=${c.slug}`}
-                    className={`block text-sm px-3 py-2 rounded-lg transition ${activeCategory === c.slug ? 'bg-orange-50 text-orange-600 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
-                    {c.icon} {c.name}
-                    <span className="text-gray-400 text-xs ml-1">({c.productCount})</span>
-                  </Link>
-                </li>
-              ))}
+              {categories.map((c) => {
+                const Icon = getCategoryIcon(c.slug)
+                return (
+                  <li key={c.slug}>
+                    <Link href={`/products?category=${c.slug}`}
+                      className={`block text-sm px-3 py-2 rounded-lg transition ${activeCategory === c.slug ? 'bg-orange-50 text-orange-600 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
+                      <Icon size={14} className="inline-block mr-2 text-orange-500" />
+                      {c.name}
+                      <span className="text-gray-400 text-xs ml-1">({c.productCount})</span>
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
 
             <h3 className="font-bold text-gray-900 mb-3">Price Range</h3>

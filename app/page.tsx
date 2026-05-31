@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { getFeaturedProducts, getFlashDeals, getCategories, getProducts } from '@/lib/api'
 import ProductCard    from '@/components/product/ProductCard'
 import CountdownTimer from '@/components/shared/CountdownTimer'
+import { Flag, Monitor, Truck, Zap } from 'lucide-react'
+import { getCategoryIcon } from '@/lib/categoryIcons'
 import type { Product, Category } from '@/lib/types'
 
 export const metadata = {
@@ -55,10 +57,6 @@ export default async function HomePage() {
             className="inline-block bg-white text-orange-600 font-bold px-8 py-3 rounded-full hover:bg-orange-50 transition">
             Shop Now →
           </Link>
-          {/* <Link href="/category/motors-bikes"
-            className="inline-block border-2 border-white text-white font-bold px-8 py-3 rounded-full hover:bg-white hover:text-orange-600 transition">
-            🏍️ Motors &amp; Bikes
-          </Link> */}
         </div>
       </section>
 
@@ -75,10 +73,13 @@ export default async function HomePage() {
               <Link key={cat.id} href={`/category/${cat.slug}`}
                 className="group flex flex-col items-center gap-1.5 bg-white rounded-xl p-2.5 border border-gray-100 hover:border-orange-200 hover:shadow-sm transition-all">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"
                   style={{ backgroundColor: c.bg, color: c.text }}
                 >
-                  {cat.icon}
+                  {(() => {
+                    const Icon = getCategoryIcon(cat.slug)
+                    return <Icon size={18} />
+                  })()}
                 </div>
                 <span className="text-[10px] font-semibold text-gray-700 text-center leading-tight">
                   {cat.name}
@@ -94,7 +95,7 @@ export default async function HomePage() {
         <section className="my-8">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">⚡</span>
+              <Zap size={18} className="text-yellow-500" />
               <h2 className="text-xl font-bold text-gray-900">Flash Deals</h2>
               <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Limited time</span>
             </div>
@@ -112,9 +113,9 @@ export default async function HomePage() {
       {/* PROMO BANNERS */}
       <section className="grid sm:grid-cols-3 gap-4 my-8">
         {[
-          { href: '/category/motors-bikes',    bg: ['#111827','#374151'], accent: '#fb923c', tag: 'New Arrivals', title: 'Motors & Bikes',  sub: 'Honda, Bajaj, TVS, Yamaha', icon: '🏍️' },
-          { href: '/category/nigerian-market', bg: ['#14532d','#16a34a'], accent: '#fde047', tag: 'Authentic',    title: 'Nigerian Market', sub: 'Ankara, Shea Butter, Zobo', icon: '🇳🇬' },
-          { href: '/category/electronics',     bg: ['#1e3a8a','#1d4ed8'], accent: '#93c5fd', tag: 'Top Deals',    title: 'Electronics',     sub: 'Samsung, Apple, Infinix',  icon: '💻'  },
+          { href: '/category/motors-bikes',    bg: ['#111827','#374151'], accent: '#fb923c', tag: 'New Arrivals', title: 'Motors & Bikes',  sub: 'Honda, Bajaj, TVS, Yamaha', icon: <Truck size={28} className="opacity-80" /> },
+          { href: '/category/nigerian-market', bg: ['#14532d','#16a34a'], accent: '#fde047', tag: 'Authentic',    title: 'Nigerian Market', sub: 'Ankara, Shea Butter, Zobo', icon: <Flag size={28} className="opacity-80" /> },
+          { href: '/category/electronics',     bg: ['#1e3a8a','#1d4ed8'], accent: '#93c5fd', tag: 'Top Deals',    title: 'Electronics',     sub: 'Samsung, Apple, Infinix',  icon: <Monitor size={28} className="opacity-80" /> },
         ].map((b) => (
           <Link key={b.href} href={b.href}
             className="rounded-2xl p-6 text-white hover:opacity-90 transition relative overflow-hidden"

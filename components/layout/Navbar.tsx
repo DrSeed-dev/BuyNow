@@ -12,12 +12,13 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
-  ShoppingCart, Heart, Search, Menu, X,
+  Home, ShoppingBag, ShoppingCart, Heart, Search, Menu, X,
   User, LogOut, Package, ChevronDown,
-  ChevronRight, Home, Grid3x3, Bell,
+  ChevronRight, Grid3x3,
 } from 'lucide-react'
+import { getCategoryIcon } from '@/lib/categoryIcons'
 import { useCartStore }     from '@/lib/store/cartStore'
 import { useWishlistStore } from '@/lib/store/wishlistStore'
 import { useAuthStore }     from '@/lib/store/authStore'
@@ -25,22 +26,21 @@ import { useHydrated }      from '@/lib/hooks/useHydrated'
 import { toast } from 'sonner'
 
 const CATEGORIES = [
-  { name: 'Electronics',     slug: 'electronics',     icon: '💻', desc: 'Phones, Laptops, TVs' },
-  { name: 'Fashion Men',     slug: 'fashion-men',     icon: '👔', desc: 'Shirts, Suits, Shoes'  },
-  { name: 'Fashion Women',   slug: 'fashion-women',   icon: '👗', desc: 'Dresses, Bags, Heels'  },
-  { name: 'Home & Kitchen',  slug: 'home-kitchen',    icon: '🏠', desc: 'Appliances, Cookware'  },
-  { name: 'Sports',          slug: 'sports',          icon: '⚽', desc: 'Jerseys, Equipment'    },
-  { name: 'Beauty',          slug: 'beauty',          icon: '💄', desc: 'Skincare, Makeup'       },
-  { name: 'Books',           slug: 'books',           icon: '📚', desc: 'Fiction, Business'      },
-  { name: 'Groceries',       slug: 'groceries',       icon: '🛒', desc: 'Rice, Oil, Beverages'  },
-  { name: 'Motors & Bikes',  slug: 'motors-bikes',    icon: '🏍️', desc: 'Honda, Bajaj, TVS'     },
-  { name: 'Nigerian Market', slug: 'nigerian-market', icon: '🇳🇬', desc: 'Ankara, Shea, Zobo'   },
+  { name: 'Electronics',     slug: 'electronics',     desc: 'Phones, Laptops, TVs' },
+  { name: 'Fashion Men',     slug: 'fashion-men',     desc: 'Shirts, Suits, Shoes'  },
+  { name: 'Fashion Women',   slug: 'fashion-women',   desc: 'Dresses, Bags, Heels'  },
+  { name: 'Home & Kitchen',  slug: 'home-kitchen',    desc: 'Appliances, Cookware'  },
+  { name: 'Sports',          slug: 'sports',          desc: 'Jerseys, Equipment'    },
+  { name: 'Beauty',          slug: 'beauty',           desc: 'Skincare, Makeup'       },
+  { name: 'Books',           slug: 'books',            desc: 'Fiction, Business'      },
+  { name: 'Groceries',       slug: 'groceries',        desc: 'Rice, Oil, Beverages'  },
+  { name: 'Motors & Bikes',  slug: 'motors-bikes',    desc: 'Honda, Bajaj, TVS'     },
+  { name: 'Nigerian Market', slug: 'nigerian-market', desc: 'Ankara, Shea, Zobo'   },
 ]
 
 export default function Navbar() {
   const hydrated  = useHydrated()
   const router    = useRouter()
-  const pathname  = usePathname()
 
   const [menuOpen,   setMenuOpen]   = useState(false)
   const [catsOpen,   setCatsOpen]   = useState(false)
@@ -63,12 +63,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [catsOpen])
 
-  // Close menu on route change
-  useEffect(() => {
-    setMenuOpen(false)
-    setCatsOpen(false)
-  }, [pathname])
-
   // Zustand — safe after hydration
   const cartCount  = hydrated ? useCartStore.getState().totalItems()         : 0
   const wishCount  = hydrated ? useWishlistStore.getState().items.length     : 0
@@ -78,14 +72,17 @@ export default function Navbar() {
     e.preventDefault()
     const q = query.trim()
     if (!q) return
+    setMenuOpen(false)
+    setCatsOpen(false)
     router.push(`/search?q=${encodeURIComponent(q)}`)
     setQuery('')
-    setMenuOpen(false)
   }
 
   function handleLogout() {
     logout()
     toast.success('Logged out')
+    setMenuOpen(false)
+    setCatsOpen(false)
     router.push('/')
   }
 
@@ -117,24 +114,26 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop search */}
-          <form
-            onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-2xl items-center bg-white rounded-lg overflow-hidden shadow-sm"
-          >
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              type="text"
-              placeholder="Search products, brands, categories..."
-              className="flex-1 px-4 py-2.5 text-gray-800 text-sm outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-orange-600 hover:bg-orange-700 transition px-5 h-full flex items-center text-white"
+          <div className="hidden md:flex flex-1 justify-center">
+            <form
+              onSubmit={handleSearch}
+              className="w-full max-w-2xl flex items-center bg-white rounded-full overflow-hidden shadow-sm ring-1 ring-slate-200"
             >
-              <Search size={18} />
-            </button>
-          </form>
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                type="text"
+                placeholder="Search products, brands, categories..."
+                className="flex-1 px-4 py-3 text-gray-800 text-sm outline-none"
+              />
+              <button
+                type="submit"
+                className="bg-orange-600 hover:bg-orange-700 transition px-4 py-3 flex items-center text-white"
+              >
+                <Search size={18} />
+              </button>
+            </form>
+          </div>
 
           {/* Right icons */}
           <div className="flex items-center gap-1 ml-auto text-white">
@@ -243,21 +242,24 @@ export default function Navbar() {
             {/* Mega dropdown */}
             {catsOpen && (
               <div className="absolute top-full left-0 w-72 bg-white shadow-2xl rounded-b-xl z-50 border border-gray-100 overflow-hidden">
-                {CATEGORIES.map((c, i) => (
-                  <Link
-                    key={c.slug}
-                    href={`/category/${c.slug}`}
-                    onClick={() => setCatsOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition group border-b border-gray-50 last:border-0"
-                  >
-                    <span className="text-xl w-8 text-center">{c.icon}</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-800 group-hover:text-orange-600">{c.name}</p>
-                      <p className="text-xs text-gray-400">{c.desc}</p>
-                    </div>
-                    <ChevronRight size={14} className="text-gray-300 group-hover:text-orange-400" />
-                  </Link>
-                ))}
+                {CATEGORIES.map((c) => {
+                  const Icon = getCategoryIcon(c.slug)
+                  return (
+                    <Link
+                      key={c.slug}
+                      href={`/category/${c.slug}`}
+                      onClick={() => setCatsOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition group border-b border-gray-50 last:border-0"
+                    >
+                      <Icon size={18} className="text-orange-500" />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-800 group-hover:text-orange-600">{c.name}</p>
+                        <p className="text-xs text-gray-400">{c.desc}</p>
+                      </div>
+                      <ChevronRight size={14} className="text-gray-300 group-hover:text-orange-400" />
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -267,16 +269,19 @@ export default function Navbar() {
 
           {/* Quick category links */}
           <div className="flex items-center overflow-x-auto scrollbar-none">
-            {CATEGORIES.slice(0, 8).map((c) => (
-              <Link
-                key={c.slug}
-                href={`/category/${c.slug}`}
-                className="flex items-center gap-1.5 px-3 py-2.5 text-white text-sm whitespace-nowrap hover:bg-orange-700 transition shrink-0"
-              >
-                <span className="text-sm">{c.icon}</span>
-                {c.name}
-              </Link>
-            ))}
+            {CATEGORIES.slice(0, 8).map((c) => {
+              const Icon = getCategoryIcon(c.slug)
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/category/${c.slug}`}
+                  className="flex items-center gap-1.5 px-3 py-2.5 text-white text-sm whitespace-nowrap hover:bg-orange-700 transition shrink-0"
+                >
+                  <Icon size={16} className="text-white opacity-90" />
+                  {c.name}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -304,10 +309,10 @@ export default function Navbar() {
           {/* Quick links */}
           <div className="grid grid-cols-4 border-b border-gray-100">
             {[
-              { href: '/',         icon: '🏠', label: 'Home'    },
-              { href: '/products', icon: '🛍️', label: 'Shop'    },
-              { href: '/cart',     icon: '🛒', label: `Cart${hydrated && cartCount > 0 ? ` (${cartCount})` : ''}` },
-              { href: '/wishlist', icon: '❤️', label: `Saved${hydrated && wishCount > 0 ? ` (${wishCount})` : ''}` },
+              { href: '/',         icon: <Home size={18} className="text-orange-500" />, label: 'Home'    },
+              { href: '/products', icon: <ShoppingBag size={18} className="text-orange-500" />, label: 'Shop'    },
+              { href: '/cart',     icon: <ShoppingCart size={18} className="text-orange-500" />, label: `Cart${hydrated && cartCount > 0 ? ` (${cartCount})` : ''}` },
+              { href: '/wishlist', icon: <Heart size={18} className="text-orange-500" />, label: `Saved${hydrated && wishCount > 0 ? ` (${wishCount})` : ''}` },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -338,20 +343,23 @@ export default function Navbar() {
 
           {mobileCats && (
             <div className="bg-gray-50 border-b border-gray-100">
-              {CATEGORIES.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/category/${c.slug}`}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 px-6 py-3 hover:bg-orange-50 transition border-b border-gray-100 last:border-0"
-                >
-                  <span className="text-xl">{c.icon}</span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">{c.name}</p>
-                    <p className="text-xs text-gray-400">{c.desc}</p>
-                  </div>
-                </Link>
-              ))}
+              {CATEGORIES.map((c) => {
+                const Icon = getCategoryIcon(c.slug)
+                return (
+                  <Link
+                    key={c.slug}
+                    href={`/category/${c.slug}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-6 py-3 hover:bg-orange-50 transition border-b border-gray-100 last:border-0"
+                  >
+                    <Icon size={20} className="text-orange-500" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">{c.name}</p>
+                      <p className="text-xs text-gray-400">{c.desc}</p>
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           )}
 

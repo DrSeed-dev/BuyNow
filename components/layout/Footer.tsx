@@ -2,6 +2,7 @@
 // Fix: Added pb-20 md:pb-0 so BottomNav does not cover footer on mobile
 
 import Link from 'next/link'
+import { Truck, Lock, ArrowLeftRight, Phone } from 'lucide-react'
 
 const BG     = '#FDFAF6'
 const BG_TOP = '#F7F3EE'
@@ -40,14 +41,14 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 py-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { emoji: '🚚', title: 'Fast Delivery',  sub: 'Same-day Lagos & Abuja' },
-              { emoji: '🔒', title: 'Secure Payment', sub: 'SSL encrypted checkout' },
-              { emoji: '↩️',  title: '7-Day Returns',  sub: 'Hassle-free policy'    },
-              { emoji: '📞', title: '24/7 Support',   sub: '0800-BUYNOW-NG'        },
+              { Icon: Truck, title: 'Fast Delivery',  sub: 'Same-day Lagos & Abuja' },
+              { Icon: Lock, title: 'Secure Payment', sub: 'SSL encrypted checkout' },
+              { Icon: ArrowLeftRight, title: '7-Day Returns',  sub: 'Hassle-free policy'    },
+              { Icon: Phone, title: '24/7 Support',   sub: '0800-BUYNOW-NG'        },
             ].map((b) => (
               <div key={b.title} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-xl shrink-0">
-                  {b.emoji}
+                  <b.Icon size={18} className="text-orange-500" />
                 </div>
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{b.title}</p>
@@ -70,7 +71,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed mb-5">
-              Nigeria's fastest growing marketplace. Electronics, Fashion,
+              Nigeria&apos;s fastest growing marketplace. Electronics, Fashion,
               Motors &amp; more delivered nationwide.
             </p>
             <div className="flex items-center gap-2 mb-6">
